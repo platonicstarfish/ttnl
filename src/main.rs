@@ -1,11 +1,12 @@
-use std::io::{Error, ErrorKind, Write};
-use std::{io, net::SocketAddr};
-use std::net::{IpAddr, TcpListener};
+use std::io::{Error, ErrorKind};
+use std::{io};
+use std::net::{IpAddr};
 use clap::{Parser};
 use init_log::LevelFilter;
 #[macro_use] extern crate log;
 
 mod init_log;
+mod serve;
 
 
 #[derive(Parser)]
@@ -42,7 +43,7 @@ fn main() {
     init_log::init_log(filter_level);
 
     let result = match cli.server {
-        true => serve(cli.bind_addr, cli.bind_port),
+        true => serve::serve(cli.bind_addr, cli.bind_port),
         false => client(),
     };
 
@@ -50,23 +51,6 @@ fn main() {
         error!("{}", e);
         std::process::exit(1);
     };
-}
-
-fn serve(ipaddr: IpAddr, port: u16) -> io::Result<()>{
-    debug!("Starting in server mode");
-
-    let socket_addr = SocketAddr::new(ipaddr, port);
-    let listener = TcpListener::bind(socket_addr)?;
-
-    info!("Listening on {0}", socket_addr);
-
-    for stream in listener.incoming() {
-        let mut stream = stream?;
-        info!("Accepted connection from {0}", stream.peer_addr()?);
-        stream.flush()?;
-    }
-
-    Ok(())
 }
 
 fn client() -> io::Result<()> {
