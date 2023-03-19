@@ -30,7 +30,7 @@ struct Cli {
     
 }
 
-fn main() -> io::Result<()> {
+fn main() {
     let cli = Cli::parse();
 
     let filter_level = match cli.verbose {
@@ -41,12 +41,15 @@ fn main() -> io::Result<()> {
 
     init_log::init_log(filter_level);
 
-    match cli.server {
+    let result = match cli.server {
         true => serve(cli.bind_addr, cli.bind_port),
         false => client(),
-    }?;
+    };
 
-    Ok(())
+    if let Err(e) = result {
+        error!("{}", e);
+        std::process::exit(1);
+    };
 }
 
 fn serve(ipaddr: IpAddr, port: u16) -> io::Result<()>{
