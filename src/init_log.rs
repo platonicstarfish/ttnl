@@ -23,16 +23,16 @@ pub fn init_log(filter_level: LevelFilter) {
                 log::Level::Trace => "➤".bold(),
             };
             let module_path = record.module_path().unwrap_or("<unknown>");
-            let module_name = module_path.split("::").last().unwrap_or("<unknown>");
-            let truncated_module_name = truncate_module_name(module_name, 12);
+            let module_name = module_path.split("::").last().unwrap_or_default();
+            let truncated_module_name = truncate_module_name(module_name, 8);
             let current_thread = thread::current();
-            let thread_id = if current_thread.name().unwrap_or("main") != "main" {
-                format!("{{tid:{:?}{{", current_thread.id())
+            let thread_id = if current_thread.name().unwrap_or("") != "main" {
+                format!(" {{tid:{}}}", filter_numeric_chars(format!("{:?}", current_thread.id())))
             } else {
                 String::new()
             };
             let log_line = format!(
-                "{} [{:<12}]{} {}",
+                "{} [{:<8}]{} {}",
                 level_symbol,
                 truncated_module_name,
                 thread_id,
@@ -52,5 +52,16 @@ fn truncate_module_name(module_name: &str, max_length: usize) -> String {
         format!("{}...{}", start, end)
     } else {
         module_name.to_owned()
+    }
+}
+
+fn filter_numeric_chars(input: String) -> String {
+    let filtered: String = input.chars()
+        .filter(|c| c.is_numeric())
+        .collect();
+    if filtered.is_empty() {
+        input
+    } else {
+        filtered
     }
 }
