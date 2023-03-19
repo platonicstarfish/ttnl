@@ -2,10 +2,10 @@ use std::io::{Error, ErrorKind, Write};
 use std::{io, net::SocketAddr};
 use std::net::{IpAddr, TcpListener};
 use clap::{Parser};
-use pretty_env_logger;
-use log::LevelFilter;
+use init_log::LevelFilter;
 #[macro_use] extern crate log;
-use colored::*;
+
+mod init_log;
 
 
 #[derive(Parser)]
@@ -39,25 +39,7 @@ fn main() -> io::Result<()> {
         2.. => LevelFilter::Trace,
     };
 
-    pretty_env_logger::formatted_builder()
-       .filter_level(filter_level)
-       .format(move | buf, record| {
-            let level_symbol = match record.level() {
-                log::Level::Error => "✖".red(),
-                log::Level::Warn => "⚠".yellow(),
-                log::Level::Info => "ℹ".cyan(),
-                log::Level::Debug => "⚙".blue(),
-                log::Level::Trace => "➤".magenta(),
-            };
-            let module_path = record.module_path().unwrap_or("<unknown>");
-            writeln!(
-                buf,
-                "{} [{:<12}] {}",
-                level_symbol,
-                module_path,
-                record.args()
-            )
-        }).init();
+    init_log::init_log(filter_level);
 
     match cli.server {
         true => serve(cli.bind_addr, cli.bind_port),
