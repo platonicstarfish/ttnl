@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package msg;
+
+message PingPong {
+    uint64 id = 1;
+}

@@ -10,3 +10,11 @@ clap = { version = "4.1.8", features = ["derive"] }
 log = "0.4.17"
 pretty_env_logger = "0.4.0"
 colored = "2.0.0"
+protobuf = "3.2.0"
+prost = "0.11.8"
+tokio-util = { version = "0.7.7", features = ["codec"] }
+rand = "0.8.5"
+
+[build-dependencies]
+prost-build = "0.11.8"
+
