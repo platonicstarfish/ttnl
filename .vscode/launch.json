@@ -25,6 +25,24 @@
         {
             "type": "lldb",
             "request": "launch",
+            "name": "Debug executable 'ttnl' client",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=ttnl",
+                    "--package=ttnl"
+                ],
+                "filter": {
+                    "name": "ttnl",
+                    "kind": "bin"
+                }
+            },
+            "args": ["-vv", "-p", "1234", "127.0.0.1"],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
             "name": "Debug unit tests in executable 'ttnl'",
             "cargo": {
                 "args": [
