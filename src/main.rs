@@ -5,8 +5,12 @@ use init_log::LevelFilter;
 
 mod init_log;
 mod serve;
-mod client;
 pub mod msg;
+
+mod client;
+
+#[cfg(feature = "tor")]
+mod tor_client;
 
 
 #[derive(Parser)]
@@ -33,9 +37,9 @@ struct Cli {
     #[arg(short = 'p')]
     port: u16,
 
-    /// Address to connect to in client mode
+    /// Address to connect to in client mode (ip or hostname)
     #[arg(name = "DEST_ADDR", required_if_eq("server", "false"))]
-    dest_addr: Option<IpAddr>,
+    dest_addr: Option<String>,
 
     /// Tor SOCKS proxy address
     #[arg(short = 't', default_value = "127.0.0.1:9050")]
@@ -61,8 +65,8 @@ fn main() {
         true => serve::serve(cli.bind_addr, cli.port),
         false => 
         {
-            let dest = SocketAddr::new(cli.dest_addr.unwrap(), cli.port);
-            client::client(cli.tor_socks, dest)
+            //let dest = SocketAddr::new(cli.dest_addr.unwrap(), cli.port);
+            client::client(cli.tor_socks, (cli.dest_addr.unwrap(), cli.port))
         },
     };
 
